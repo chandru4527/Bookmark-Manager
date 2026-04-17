@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-900 via-gray-900 to-black flex items-center justify-center">
+
+    <div
+        class="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 space-y-6">
+
+        <!-- Title -->
+        <h1 class="text-2xl font-bold text-white text-center">🔖 Bookmark Manager</h1>
+
+        <!-- Form -->
+        <div class="flex flex-col gap-3">
+            <input type="text"
+                class="border border-white/30 bg-transparent text-white placeholder-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Name" id="name">
+
+            <input type="url"
+                class="border border-white/30 bg-transparent text-white placeholder-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="URL" id="url">
+
+            <button class="py-2 bg-blue-600 hover:bg-blue-700 transition rounded text-white font-semibold"
+                onclick="submit()">
+                Add Bookmark
+            </button>
+        </div>
+
+        <!-- List -->
+        <div id="getlist" class="space-y-3 max-h-64  pr-1"></div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-4 text-xs sm:text-sm font-semibold text-gray-300">
+            Made with ❤️ using JavaScript, TailwindCSS
+        </footer>
+
+    </div>
+
+    <script>
+        let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+        // Render bookmarks
+        const getdata = () => {
+            const list = document.getElementById("getlist");
+            list.innerHTML = "";
+
+            bookmarks.sort((a, b) => a.Name.localeCompare(b.Name))
+
+            bookmarks.forEach((b, index) => {
+                list.innerHTML += `
+        <div class="flex justify-between items-center bg-white/10 border border-white/20 p-3 rounded-xl hover:scale-[1.02] transition">
+            <div class="overflow-hidden">
+                <h1 class="font-semibold text-white truncate">${b.Name}</h1>
+                <a href="${b.Url}" target="_blank" class="text-blue-400 text-sm truncate block hover:underline">${b.Url}</a>
+            </div> 
+            <button onclick="deletebookmark(${index})" 
+                class="bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-lg text-sm">
+                Delete
+            </button>
+        </div>
+        `;
+            });
+        };
+
+        // Add bookmark
+        const submit = () => {
+            const name = document.getElementById("name").value;
+            const url = document.getElementById("url").value;
+
+            if (!name || !url) {
+                alert("Please enter all fields");
+                return;
+            }
+
+            bookmarks.push({ Name: name, Url: url });
+
+            localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+
+            document.getElementById("name").value = "";
+            document.getElementById("url").value = "";
+
+            getdata();
+        };
+
+        // Delete bookmark
+        const deletebookmark = (index) => {
+            bookmarks.splice(index, 1);
+            localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+            getdata();
+        };
+
+        // Initial load
+        getdata();
+    </script>
+
+</body>
+
+</html>
